@@ -29,7 +29,12 @@ public class Main {
                         new Item("Laptop", 1, 10000),
                         new Item("Mouse", 2, 200))),
                 new Invoice("INV-002", "Budi", List.of(
-                        new Item("Keyboard", 1, 300))));
+                        new Item("Keyboard", 1, 300))),
+                new Invoice("INV-003", "Andi", List.of(
+                        new Item("Laptop", 1, 30000000))),
+                new Invoice("INV-004", "Bobi", List.of(
+                        new Item("PC", 1, 20000000)))
+        );
 
         // --- Load JRXML dari resources ---
         InputStream reportStream = Main.class.getResourceAsStream("/reports/invoice_report.jrxml");

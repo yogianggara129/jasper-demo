@@ -1,72 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-    name="invoice_report" pageWidth="595" pageHeight="842"
+    xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
+    xsi:schemaLocation="
+        http://jasperreports.sourceforge.net/jasperreports
+        http://jasperreports.sourceforge.net/xsd/jasperreport.xsd
+        http://jasperreports.sourceforge.net/jasperreports/components
+        http://jasperreports.sourceforge.net/xsd/components.xsd"
+    name="invoice_report"
+    pageWidth="595" pageHeight="842"
     columnWidth="555" leftMargin="20" rightMargin="20"
     topMargin="20" bottomMargin="20" uuid="acb049b2-039e-4579-a4e6-b0c6304a7a73">
 
-    <!-- 🧩 SubDataset untuk nested list Item -->
+    <!-- ========================================================= -->
+    <!-- 🧩 SubDataset: daftar item pada invoice -->
+    <!-- ========================================================= -->
     <subDataset name="ItemsDataset">
-        <field name="product" class="java.lang.String" />
-        <field name="qty" class="java.lang.Integer" />
-        <field name="price" class="java.lang.Double" />
+        <field name="product" class="java.lang.String"/>
+        <field name="qty" class="java.lang.Integer"/>
+        <field name="price" class="java.lang.Double"/>
     </subDataset>
 
-    <!-- 🧾 Field utama Invoice -->
-    <field name="invoiceNumber" class="java.lang.String" />
-    <field name="customerName" class="java.lang.String" />
-    <field name="items" class="java.util.List" />
+    <!-- ========================================================= -->
+    <!-- 🧾 Field utama invoice -->
+    <!-- ========================================================= -->
+    <field name="invoiceNumber" class="java.lang.String"/>
+    <field name="customerName" class="java.lang.String"/>
+    <field name="items" class="java.util.List"/>
 
-    <!-- 🏷️ Header laporan -->
+    <!-- ========================================================= -->
+    <!-- 🏷️ Header Laporan -->
+    <!-- ========================================================= -->
     <title>
-        <band height="40">
+        <band height="60">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="60" backcolor="#f3f3f3" mode="Opaque"/>
+            </rectangle>
             <staticText>
-                <reportElement x="0" y="0" width="200" height="30" />
+                <reportElement x="15" y="15" width="525" height="30"/>
+                <textElement textAlignment="Center">
+                    <font size="18" isBold="true"/>
+                </textElement>
                 <text><![CDATA[INVOICE REPORT]]></text>
             </staticText>
         </band>
     </title>
 
+    <!-- ========================================================= -->
     <!-- 📄 Detail setiap invoice -->
+    <!-- ========================================================= -->
     <detail>
-        <band height="100">
+        <band height="220" splitType="Stretch">
+
+            <!-- 🔹 Info invoice -->
+            <line>
+                <reportElement x="0" y="0" width="555" height="1" forecolor="#CCCCCC"/>
+            </line>
 
             <textField>
-                <reportElement x="0" y="0" width="200" height="20" />
-                <textFieldExpression><![CDATA["Invoice: " + $F{invoiceNumber}]]></textFieldExpression>
+                <reportElement x="0" y="10" width="250" height="20"/>
+                <textElement><font isBold="true"/></textElement>
+                <textFieldExpression><![CDATA["Invoice #: " + $F{invoiceNumber}]]></textFieldExpression>
             </textField>
 
             <textField>
-                <reportElement x="0" y="20" width="200" height="20" />
+                <reportElement x="300" y="10" width="250" height="20"/>
+                <textElement><font isBold="true"/></textElement>
                 <textFieldExpression><![CDATA["Customer: " + $F{customerName}]]></textFieldExpression>
             </textField>
 
-            <!-- 🧾 List item di dalam invoice -->
+            <line>
+                <reportElement x="0" y="35" width="555" height="1" forecolor="#CCCCCC"/>
+            </line>
+
+            <!-- 🔹 Header kolom tabel item -->
+            <frame>
+                <reportElement x="0" y="45" width="555" height="25" backcolor="#eeeeee" mode="Opaque"/>
+                <staticText>
+                    <reportElement x="10" y="5" width="200" height="15"/>
+                    <textElement><font isBold="true"/></textElement>
+                    <text><![CDATA[Product]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="250" y="5" width="100" height="15"/>
+                    <textElement textAlignment="Right"><font isBold="true"/></textElement>
+                    <text><![CDATA[Qty]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="360" y="5" width="100" height="15"/>
+                    <textElement textAlignment="Right"><font isBold="true"/></textElement>
+                    <text><![CDATA[Price]]></text>
+                </staticText>
+                <staticText>
+                    <reportElement x="470" y="5" width="85" height="15"/>
+                    <textElement textAlignment="Right"><font isBold="true"/></textElement>
+                    <text><![CDATA[Total]]></text>
+                </staticText>
+            </frame>
+
+            <!-- 🔹 Daftar item -->
             <componentElement>
-                <reportElement x="0" y="45" width="500" height="50" />
-                <jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components"
-                    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                <reportElement x="0" y="75" width="555" height="100"/>
+                <jr:list>
                     <datasetRun subDataset="ItemsDataset">
-                        <dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{items})]]></dataSourceExpression>
+                        <dataSourceExpression><![CDATA[
+                            new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{items})
+                        ]]></dataSourceExpression>
                     </datasetRun>
 
                     <jr:listContents height="20">
+                        <!-- Product -->
                         <textField>
-                            <reportElement x="0" y="0" width="150" height="20" />
+                            <reportElement x="10" y="0" width="200" height="18"/>
                             <textFieldExpression><![CDATA[$F{product}]]></textFieldExpression>
                         </textField>
+                        <!-- Qty -->
                         <textField>
-                            <reportElement x="160" y="0" width="100" height="20" />
+                            <reportElement x="250" y="0" width="100" height="18"/>
+                            <textElement textAlignment="Right"/>
                             <textFieldExpression><![CDATA[$F{qty}]]></textFieldExpression>
                         </textField>
-                        <textField>
-                            <reportElement x="270" y="0" width="100" height="20" />
+                        <!-- Price -->
+                        <textField pattern="#,##0.00">
+                            <reportElement x="360" y="0" width="100" height="18"/>
+                            <textElement textAlignment="Right"/>
                             <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+                        </textField>
+                        <!-- Total per item -->
+                        <textField pattern="#,##0.00">
+                            <reportElement x="470" y="0" width="85" height="18"/>
+                            <textElement textAlignment="Right"/>
+                            <textFieldExpression><![CDATA[$F{qty} * $F{price}]]></textFieldExpression>
                         </textField>
                     </jr:listContents>
                 </jr:list>
             </componentElement>
+
+            <!-- 🔹 Garis bawah tabel -->
+            <line>
+                <reportElement x="0" y="175" width="555" height="1" forecolor="#CCCCCC"/>
+            </line>
+
+            <!-- 🔹 Total keseluruhan -->
+            <staticText>
+                <reportElement x="360" y="185" width="100" height="20"/>
+                <textElement textAlignment="Right"><font isBold="true"/></textElement>
+                <text><![CDATA[Grand Total:]]></text>
+            </staticText>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="470" y="185" width="85" height="20"/>
+                <textElement textAlignment="Right"><font isBold="true"/></textElement>
+                <textFieldExpression><![CDATA[
+                    ((java.util.List<com.example.models.Item>)$F{items})
+                        .stream()
+                        .mapToDouble(i -> ((com.example.models.Item)i).getQty() * ((com.example.models.Item)i).getPrice())
+                        .sum()
+                ]]></textFieldExpression>
+            </textField>
 
         </band>
     </detail>
